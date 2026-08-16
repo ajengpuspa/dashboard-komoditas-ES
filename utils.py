@@ -624,7 +624,7 @@ button[data-baseweb="tab"]{
 }
 
 [data-testid="stDecoration"} {
-display: none !important;
+    display: none !important;
 }
 
 </style>
