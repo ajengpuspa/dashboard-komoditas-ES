@@ -78,14 +78,14 @@ header[data-testid="stHeader"]{
 ========================================================== */
 
 h1{
-    font-size:2.6rem !important;
+    font-size:42px !important;
     font-weight:800 !important;
     color:#31333F;
     margin-bottom:.5rem;
 }
 
 h2{
-    font-size:2rem !important;
+    font-size:32px !important;
     font-weight:700 !important;
     color:#31333F;
     margin-top:1.4rem;
@@ -93,13 +93,13 @@ h2{
 }
 
 h3{
-    font-size:1.45rem !important;
+    font-size:24px !important;
     font-weight:700 !important;
     color:#31333F;
 }
 
 h4{
-    font-size:1.15rem !important;
+    font-size:18px !important;
     font-weight:600 !important;
     color:#31333F;
 }
