@@ -622,6 +622,11 @@ button[data-baseweb="tab"]{
     background:#D9DBE2;
     border-radius:10px;
 }
+
+[data-testid="stDecoration"} {
+display: none !important;
+}
+
 </style>
 """
 
