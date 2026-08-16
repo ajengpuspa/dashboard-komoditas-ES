@@ -623,8 +623,44 @@ button[data-baseweb="tab"]{
     border-radius:10px;
 }
 
-[data-testid="stDecoration"} {
+/* ==========================================================
+   HIDE STREAMLIT COMMUNITY CLOUD BOTTOM-RIGHT PROFILE
+========================================================== */
+
+/* Target utama tombol profile */
+[data-testid="stDecoration"],
+button[data-testid="baseButton-stDecoration"],
+button[aria-label="View profile"],
+div[data-testid="stDecoration"],
+span[data-testid="stDecoration"],
+a[data-testid="stDecoration"],
+button[data-testid="stDecoration"] {
     display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Fallback: container bottom-right */
+div.css-1cpxqw2,
+div.css-1v0mbdj,
+div[data-testid="stBottomRightContainer"] {
+    display: none !important;
+}
+
+/* Fallback tambahan untuk decoration di body */
+body > div[data-testid="stDecoration"] {
+    display: none !important;
+}
+
+/* Target seluruh elemen fixed di area kanan bawah */
+div[data-testid="stDecoration"] button,
+div[data-testid="stDecoration"] a,
+div[data-testid="stDecoration"] span {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
 
 </style>
