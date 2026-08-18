@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+import base64
+from pathlib import Path
 
 # ======================================================================
 # SESSION STATE
@@ -35,6 +37,44 @@ _CUSTOM_CSS = """
 <style>
 
 /* ==========================================================
+   KOMODITASAI COLOR PALETTE
+========================================================== */
+
+:root{
+
+    /* PRIMARY */
+    --olive:#566834;
+    --olive-dark:#46562A;
+    --olive-light:#718A42;
+
+    /* GREEN */
+    --forest:#006738;
+    --forest-dark:#004D2A;
+    --leaf:#87BD43;
+    --leaf-light:#B7D97A;
+
+    /* GOLD */
+    --gold:#E5B043;
+    --gold-dark:#C99528;
+    --gold-light:#F4D98B;
+
+    /* BACKGROUND */
+    --bg:#FFFFFF;
+    --bg-soft:#F7F9F3;
+    --bg-green:#F1F5E9;
+
+    /* BORDER */
+    --border:#DDE4D3;
+    --border-dark:#C9D3BC;
+
+    /* TEXT */
+    --text:#30372B;
+    --text-secondary:#66705D;
+    --text-muted:#8A9282;
+}
+
+
+/* ==========================================================
    GLOBAL
 ========================================================== */
 
@@ -46,285 +86,593 @@ body,
 .stApp,
 [data-testid="stAppViewContainer"],
 [data-testid="stMain"]{
+
     background:#FFFFFF;
-    color:#31333F;
-    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+
+    color:var(--text);
+
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
 }
+
 
 /* ==========================================================
    STREAMLIT HEADER
 ========================================================== */
 
 header[data-testid="stHeader"]{
+
     background:#FFFFFF !important;
-    border-bottom:1px solid #E6E6E9;
+
+    border-bottom:1px solid var(--border);
 }
 
 [data-testid="stToolbar"]{
+
     background:#FFFFFF !important;
 }
+
 
 /* ==========================================================
    MAIN CONTAINER
 ========================================================== */
 
 .block-container{
+
     max-width:1400px;
+
     padding:1rem 2rem 1.5rem;
 }
+
 
 /* ==========================================================
    TYPOGRAPHY
 ========================================================== */
 
 h1{
+
     font-size:42px !important;
+
     font-weight:800 !important;
-    color:#31333F;
+
+    color:var(--text);
+
     margin-bottom:.5rem;
 }
 
 h2{
+
     font-size:32px !important;
+
     font-weight:700 !important;
-    color:#31333F;
+
+    color:var(--text);
+
     margin-top:1.4rem;
+
     margin-bottom:.6rem;
 }
 
 h3{
+
     font-size:24px !important;
+
     font-weight:700 !important;
-    color:#31333F;
+
+    color:var(--text);
 }
 
 h4{
+
     font-size:18px !important;
+
     font-weight:600 !important;
-    color:#31333F;
+
+    color:var(--text);
 }
 
-/*
-p,
-span,
-label,
-li{
-    font-size:13px;
-    line-height:1.7;
-    color:#31333F;
-}
-*/
-
-/* ==========================================================
-   HERO TITLE (Homepage)
-========================================================== */
 
 /* ==========================================================
    HOMEPAGE HERO
 ========================================================== */
 
 .homepage-hero{
+
     position:relative;
+
     overflow:hidden;
+
     min-height:690px;
+
     background:
-        radial-gradient(circle at 85% 20%, rgba(255,107,107,.07), transparent 28%),
-        linear-gradient(135deg,#FFFFFF 0%,#FFFDFD 55%,#FFF7F5 100%);
-    border:1px solid #E8E8EC;
+
+        radial-gradient(
+            circle at 78% 22%,
+            rgba(135,189,67,.15),
+            transparent 25%
+        ),
+
+        radial-gradient(
+            circle at 12% 88%,
+            rgba(0,103,56,.07),
+            transparent 27%
+        ),
+
+        radial-gradient(
+            circle at 92% 85%,
+            rgba(229,176,67,.08),
+            transparent 22%
+        ),
+
+        linear-gradient(
+            135deg,
+            #FFFFFF 0%,
+            #FBFCF8 52%,
+            #F3F7EC 100%
+        );
+
+    border:1px solid var(--border);
+
     border-radius:28px;
-    padding:70px 70px 45px;
-    box-shadow:0 8px 30px rgba(49,51,63,.04);
+
+    padding:65px 70px 45px;
+
+    box-shadow:
+        0 8px 30px rgba(70,86,42,.07);
 }
 
-/* Decorative dots */
-
-.homepage-hero::before{
-    content:"";
-    position:absolute;
-    top:55px;
-    left:45px;
-    width:110px;
-    height:110px;
-    opacity:.45;
-    background-image:radial-gradient(#FF8A7A 1.7px, transparent 1.7px);
-    background-size:22px 22px;
-}
-
-/* Right decorative circle */
-
-.homepage-hero::after{
-    content:"";
-    position:absolute;
-    width:330px;
-    height:330px;
-    right:-120px;
-    top:210px;
-    border-radius:50%;
-    background:radial-gradient(
-        circle,
-        rgba(255,115,105,.10) 0%,
-        rgba(255,115,105,.04) 45%,
-        transparent 70%
-    );
-}
 
 /* ==========================================================
-   HERO LOGO
+   DECORATIVE GRID
 ========================================================== */
 
-.hero-logo{
-    position:relative;
-    z-index:2;
-    width:118px;
-    height:118px;
-    margin:5px auto 35px;
-    border-radius:30px;
-    background:linear-gradient(135deg,#FF4B4B 0%,#FF9A8B 100%);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    color:white;
-    font-size:52px;
-    font-weight:800;
-    box-shadow:
-        0 18px 35px rgba(255,75,75,.18),
-        inset 0 1px 0 rgba(255,255,255,.35);
+.homepage-hero::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:45px;
+    left:45px;
+
+    width:150px;
+    height:120px;
+
+    opacity:.55;
+
+    background-image:
+
+        radial-gradient(
+            var(--leaf) 1.6px,
+            transparent 1.6px
+        );
+
+    background-size:24px 24px;
+
+    mask-image:
+
+        linear-gradient(
+            135deg,
+            black 0%,
+            transparent 90%
+        );
+
+    -webkit-mask-image:
+
+        linear-gradient(
+            135deg,
+            black 0%,
+            transparent 90%
+        );
 }
+
+
+/* ==========================================================
+   RIGHT GREEN GLOW
+========================================================== */
+
+.homepage-hero::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:430px;
+    height:430px;
+
+    right:-170px;
+    top:110px;
+
+    border-radius:50%;
+
+    background:
+
+        radial-gradient(
+            circle,
+            rgba(135,189,67,.15) 0%,
+            rgba(135,189,67,.06) 38%,
+            transparent 72%
+        );
+
+    pointer-events:none;
+}
+
 
 /* ==========================================================
    HERO CONTENT
 ========================================================== */
 
 .hero-content{
+
     position:relative;
-    z-index:3;
+
+    z-index:5;
+
     text-align:center;
-    max-width:1050px;
+
+    max-width:1100px;
+
     margin:0 auto;
 }
+
+
+/* ==========================================================
+   HERO LOGO
+========================================================== */
+
+.hero-logo{
+
+    position:relative;
+
+    width:155px;
+    height:155px;
+
+    margin:0 auto 22px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:transparent;
+
+    border:none;
+
+    border-radius:0;
+
+    overflow:visible;
+
+    z-index:5;
+}
+
+
+/* ==========================================================
+   LOGO GLOW
+========================================================== */
+
+.hero-logo::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:130px;
+    height:130px;
+
+    border-radius:50%;
+
+    background:
+
+        radial-gradient(
+            circle,
+            rgba(135,189,67,.18),
+            rgba(135,189,67,.06) 45%,
+            transparent 72%
+        );
+
+    filter:blur(10px);
+
+    z-index:-1;
+}
+
+
+/* ==========================================================
+   HERO LOGO IMAGE
+========================================================== */
+
+.hero-logo-image{
+
+    width:155px;
+    height:155px;
+
+    object-fit:contain;
+
+    display:block;
+
+    background:transparent;
+
+    filter:
+
+        drop-shadow(
+            0 10px 18px
+            rgba(86,104,52,.15)
+        );
+}
+
+
+/* ==========================================================
+   KICKER
+========================================================== */
 
 .hero-kicker{
-    display:inline-block;
-    padding:7px 15px;
-    margin-bottom:20px;
+
+    position:relative;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:8px 17px;
+
+    margin-bottom:22px;
+
     border-radius:30px;
-    background:#FFF0EE;
-    color:#E84C4C;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            #F1F5E9,
+            #E8EFDB
+        );
+
+    border:1px solid #D3DEC2;
+
+    color:var(--forest);
+
     font-size:12px;
-    font-weight:700;
+
+    font-weight:750;
+
     letter-spacing:.8px;
+
     text-transform:uppercase;
+
+    box-shadow:
+
+        0 4px 12px
+        rgba(86,104,52,.06);
 }
+
+
+/* ==========================================================
+   HERO TITLE
+========================================================== */
 
 .hero-title{
-    font-size:42px;
+
+    font-size:43px;
+
     font-weight:800;
-    line-height:1.22;
-    letter-spacing:-1.2px;
-    color:#292B38;
+
+    line-height:1.18;
+
+    letter-spacing:-1.4px;
+
+    color:var(--olive-dark);
+
     margin:0 auto;
-    max-width:980px;
+
+    max-width:1000px;
 }
+
+
+/* ==========================================================
+   HERO ACCENT
+========================================================== */
 
 .hero-accent{
-    width:90px;
+
+    width:105px;
+
     height:5px;
+
     border-radius:10px;
-    background:linear-gradient(90deg,#FF4B4B,#FFB199);
-    margin:28px auto 24px;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            var(--forest) 0%,
+            var(--olive) 50%,
+            var(--gold) 100%
+        );
+
+    margin:28px auto 26px;
+
+    box-shadow:
+
+        0 4px 10px
+        rgba(86,104,52,.15);
 }
+
+
+/* ==========================================================
+   HERO AUTHORS
+========================================================== */
 
 .hero-authors{
+
     display:flex;
+
     align-items:center;
+
     justify-content:center;
+
     gap:12px;
-    font-size:19px;
+
+    font-size:18px;
+
     font-weight:600;
-    color:#4E5060;
+
+    color:#596351;
 }
 
+
+/* ==========================================================
+   AUTHOR ICON
+========================================================== */
+
 .hero-author-icon{
-    width:38px;
-    height:38px;
+
+    width:40px;
+    height:40px;
+
     border-radius:50%;
-    background:linear-gradient(135deg,#FF5A52,#FF9E8F);
-    color:white;
+
     display:flex;
+
     align-items:center;
+
     justify-content:center;
-    font-size:23px;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            #F0F5E8,
+            #E5EDD8
+        );
+
+    border:1px solid #CFDABE;
+
+    color:var(--forest);
+
+    font-size:21px;
+
+    box-shadow:
+
+        0 5px 14px
+        rgba(86,104,52,.10);
 }
+
+
+/* ==========================================================
+   EXTRA DECORATIVE ELEMENT
+========================================================== */
+
+.homepage-hero .hero-content::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:8px;
+    height:8px;
+
+    right:-130px;
+    top:120px;
+
+    border-radius:50%;
+
+    background:var(--gold);
+
+    box-shadow:
+
+        26px 45px 0 var(--leaf),
+        -35px 80px 0 var(--forest),
+        55px 105px 0 var(--olive-light);
+
+    opacity:.60;
+}
+
+
+/* ==========================================================
+   BOTTOM DECORATIVE LINE
+========================================================== */
+
+.homepage-hero{
+
+    isolation:isolate;
+}
+
+.homepage-hero .hero-content{
+
+    padding-bottom:25px;
+}
+
+.homepage-hero .hero-content::marker{
+
+    display:none;
+}
+
 
 /* ==========================================================
    DECORATIVE BOTTOM WAVE
 ========================================================== */
 
 .hero-wave{
+
     position:absolute;
+
     left:-5%;
     bottom:-5px;
+
     width:110%;
     height:150px;
+
     z-index:1;
+
     opacity:.9;
 }
 
 .hero-wave svg{
+
     width:100%;
     height:100%;
 }
 
-/* ==========================================================
-   SMALL SCREEN
-========================================================== */
 
-@media(max-width:900px){
-
-    .homepage-hero{
-        padding:50px 30px 35px;
-        min-height:620px;
-    }
-
-    .hero-title{
-        font-size:31px;
-    }
-
-    .hero-logo{
-        width:95px;
-        height:95px;
-        font-size:42px;
-        border-radius:24px;
-    }
-
-    .hero-authors{
-        font-size:13px;
-    }
-}
 /* ==========================================================
    SIDEBAR
 ========================================================== */
 
 section[data-testid="stSidebar"]{
+
     width:245px !important;
-    background:#F6F7FA;
-    border-right:1px solid #E7E8EC;
+
+    background:#F4F6F0;
+
+    border-right:1px solid #DCE3D4;
 }
 
 section[data-testid="stSidebar"] > div{
-    background:#F6F7FA;
+
+    background:#F4F6F0;
 }
 
 section[data-testid="stSidebarContent"]{
+
     padding:18px 16px;
 }
 
+
 /* Hide default Streamlit multipage navigation */
+
 [data-testid="stSidebarNav"]{
+
     display:none !important;
 }
 
 [data-testid="stSidebarNavItems"]{
+
     display:none !important;
 }
 
@@ -334,26 +682,75 @@ section[data-testid="stSidebarContent"]{
 ========================================================== */
 
 .sidebar-brand{
+
     display:flex;
+
     align-items:center;
+
     gap:11px;
+
     margin-bottom:28px;
 }
 
 .sidebar-brand-text{
+
     line-height:1.25;
 }
 
 .sidebar-brand-title{
+
     font-size:15px;
+
     font-weight:750;
-    color:#31333F;
+
+    color:var(--olive-dark);
 }
 
 .sidebar-brand-subtitle{
+
     font-size:11px;
-    color:#737687;
+
+    color:#78806F;
+
     margin-top:3px;
+}
+
+
+/* ==========================================================
+   SIDEBAR BRAND LOGO
+========================================================== */
+
+.sidebar-brand-logo{
+
+    width:52px;
+    height:52px;
+
+    border-radius:14px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            var(--olive),
+            var(--forest)
+        );
+
+    color:#FFFFFF;
+
+    font-size:22px;
+
+    font-weight:800;
+
+    box-shadow:
+
+        0 8px 18px
+        rgba(86,104,52,.18);
 }
 
 
@@ -362,9 +759,13 @@ section[data-testid="stSidebarContent"]{
 ========================================================== */
 
 .sidebar-title{
+
     font-size:15px;
+
     font-weight:700;
-    color:#31333F;
+
+    color:var(--olive-dark);
+
     margin:0 0 10px 2px;
 }
 
@@ -374,43 +775,72 @@ section[data-testid="stSidebarContent"]{
 ========================================================== */
 
 div[data-testid="stPageLink"]{
+
     margin-bottom:4px;
 }
 
 div[data-testid="stPageLink"] a{
+
     display:flex;
+
     align-items:center;
+
     min-height:40px;
+
     padding:8px 12px;
+
     border-radius:11px;
+
     font-size:13px;
+
     font-weight:500;
-    color:#424552;
+
+    color:#4E584A;
+
     transition:
+
         background .18s ease,
         color .18s ease;
 }
 
+
 div[data-testid="stPageLink"] a:hover{
-    background:#EAECF3;
-    color:#31333F;
+
+    background:#E7EDDC;
+
+    color:var(--forest);
 }
 
+
 div[data-testid="stPageLink"][aria-current="page"] a{
-    background:#E9ECF4;
-    color:#31333F;
+
+    background:#E0E8D3;
+
+    color:var(--forest);
+
     font-weight:650;
 }
 
+
+/* ==========================================================
+   PAGE LINK BULLET
+========================================================== */
+
 div[data-testid="stPageLink"] a::before{
+
     content:"•";
-    color:#9BA0AD;
+
+    color:#9AA38F;
+
     margin-right:9px;
+
     font-size:11px;
 }
 
+
 div[data-testid="stPageLink"][aria-current="page"] a::before{
-    color:#6E7382;
+
+    color:var(--gold-dark);
 }
 
 
@@ -419,7 +849,9 @@ div[data-testid="stPageLink"][aria-current="page"] a::before{
 ========================================================== */
 
 .sidebar-divider{
-    border-top:1px solid #E2E4E9;
+
+    border-top:1px solid #D8E0D0;
+
     margin:20px 0 14px;
 }
 
@@ -429,8 +861,10 @@ div[data-testid="stPageLink"][aria-current="page"] a::before{
 ========================================================== */
 
 section[data-testid="stSidebar"] .stCaption{
+
     font-size:11px !important;
-    color:#858997 !important;
+
+    color:#858D7E !important;
 }
 
 
@@ -439,22 +873,35 @@ section[data-testid="stSidebar"] .stCaption{
 ========================================================== */
 
 .page-breadcrumb{
+
     font-size:11px;
-    color:#9295A0;
+
+    color:#929A88;
+
     margin-bottom:5px;
 }
 
+
 .page-title{
+
     font-size:32px;
+
     font-weight:800;
+
     letter-spacing:-.5px;
-    color:#31333F;
+
+    color:var(--olive-dark);
+
     margin:0;
 }
 
+
 .page-caption{
+
     font-size:13px;
-    color:#747784;
+
+    color:#747C6D;
+
     margin-top:5px;
 }
 
@@ -464,24 +911,41 @@ section[data-testid="stSidebar"] .stCaption{
 ========================================================== */
 
 .card{
+
     background:#FFFFFF;
-    border:1px solid #E5E6EA;
+
+    border:1px solid var(--border);
+
     border-radius:16px;
+
     padding:22px;
-    box-shadow:0 3px 12px rgba(49,51,63,.025);
+
+    box-shadow:
+
+        0 3px 12px
+        rgba(86,104,52,.035);
 }
+
 
 .stMarkdown .card h3{
+
     font-size:18px !important;
+
     font-weight:700 !important;
+
     margin:0 0 10px !important;
-    color:#31333F !important;
+
+    color:var(--olive-dark) !important;
 }
 
+
 .stMarkdown .card p{
+
     font-size:13px !important;
+
     line-height:1.7 !important;
-    color:#626574 !important;
+
+    color:#626B5D !important;
 }
 
 
@@ -490,8 +954,11 @@ section[data-testid="stSidebar"] .stCaption{
 ========================================================== */
 
 div[data-testid="stVerticalBlockBorderWrapper"]{
-    border:1px solid #E5E6EA;
+
+    border:1px solid var(--border);
+
     border-radius:16px;
+
     background:#FFFFFF;
 }
 
@@ -504,9 +971,13 @@ div[data-testid="stInfo"],
 div[data-testid="stWarning"],
 div[data-testid="stError"],
 div[data-testid="stSuccess"]{
+
     border-radius:12px;
-    border:1px solid #E5E6EA;
+
+    border:1px solid var(--border);
+
     padding:.75rem 1rem;
+
     font-size:13px;
 }
 
@@ -516,28 +987,48 @@ div[data-testid="stSuccess"]{
 ========================================================== */
 
 [data-testid="stMetric"]{
+
     background:#FFFFFF;
-    border:1px solid #E5E6EA;
+
+    border:1px solid var(--border);
+
     border-radius:14px;
+
     padding:16px;
+
+    box-shadow:
+
+        0 2px 8px
+        rgba(86,104,52,.025);
 }
+
 
 [data-testid="stMetricLabel"]{
+
     font-size:12px !important;
-    color:#777B88 !important;
+
+    color:#777F6E !important;
 }
+
 
 [data-testid="stMetricValue"]{
+
     font-size:25px !important;
+
     font-weight:750 !important;
-    color:#31333F !important;
+
+    color:var(--olive-dark) !important;
 }
 
+
 [data-testid="stMetricDelta"]{
+
     font-size:12px !important;
 }
 
+
 [data-testid="stMetricDelta"] svg{
+
     display:none;
 }
 
@@ -547,16 +1038,59 @@ div[data-testid="stSuccess"]{
 ========================================================== */
 
 .stButton button{
+
     border-radius:10px;
-    border:1px solid #E0E2E7;
+
+    border:1px solid #D5DDCC;
+
     font-size:13px;
+
     font-weight:600;
+
     padding:.48rem 1rem;
+
+    color:#4B5646;
+
     transition:.18s ease;
 }
 
+
 .stButton button:hover{
-    border-color:#FF8A7A;
+
+    border-color:var(--olive-light);
+
+    color:var(--forest);
+
+    background:#F1F5E9;
+}
+
+
+/* ==========================================================
+   PRIMARY BUTTON
+========================================================== */
+
+.stButton button[kind="primary"]{
+
+    background:var(--forest);
+
+    border-color:var(--forest);
+
+    color:#FFFFFF;
+
+    box-shadow:
+
+        0 4px 10px
+        rgba(0,103,56,.12);
+}
+
+
+.stButton button[kind="primary"]:hover{
+
+    background:var(--forest-dark);
+
+    border-color:var(--forest-dark);
+
+    color:#FFFFFF;
 }
 
 
@@ -570,19 +1104,43 @@ div[data-testid="stSuccess"]{
 .stDateInput label,
 .stRadio label,
 .stCheckbox label{
+
     font-size:13px;
+
     font-weight:600;
-    color:#454855;
+
+    color:#454F42;
 }
+
 
 .stTextInput input,
 .stNumberInput input{
+
     font-size:13px;
+
     border-radius:9px;
 }
 
+
 .stSelectbox div[data-baseweb="select"]{
+
     font-size:13px;
+}
+
+
+/* ==========================================================
+   INPUT FOCUS
+========================================================== */
+
+.stTextInput input:focus,
+.stNumberInput input:focus{
+
+    border-color:var(--olive-light) !important;
+
+    box-shadow:
+
+        0 0 0 1px
+        var(--olive-light) !important;
 }
 
 
@@ -591,6 +1149,7 @@ div[data-testid="stSuccess"]{
 ========================================================== */
 
 [data-testid="stDataFrame"]{
+
     font-size:13px;
 }
 
@@ -600,8 +1159,52 @@ div[data-testid="stSuccess"]{
 ========================================================== */
 
 button[data-baseweb="tab"]{
+
     font-size:13px;
+
     padding:9px 16px;
+}
+
+
+button[data-baseweb="tab"][aria-selected="true"]{
+
+    color:var(--forest) !important;
+}
+
+
+/* ==========================================================
+   SLIDER
+========================================================== */
+
+div[data-baseweb="slider"] div[role="slider"]{
+
+    background:var(--forest) !important;
+}
+
+
+div[data-baseweb="slider"] > div > div{
+
+    background:#DCE6D0 !important;
+}
+
+
+/* ==========================================================
+   CHECKBOX
+========================================================== */
+
+[data-testid="stCheckbox"] label{
+
+    color:#454F42;
+}
+
+
+/* ==========================================================
+   RADIO
+========================================================== */
+
+div[role="radiogroup"] label{
+
+    color:#454F42;
 }
 
 
@@ -610,57 +1213,129 @@ button[data-baseweb="tab"]{
 ========================================================== */
 
 ::-webkit-scrollbar{
+
     width:6px;
+
     height:6px;
 }
 
 ::-webkit-scrollbar-track{
+
     background:transparent;
 }
 
 ::-webkit-scrollbar-thumb{
-    background:#D9DBE2;
+
+    background:#CBD4C1;
+
     border-radius:10px;
 }
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:#AEBBA1;
+}
+
 
 /* ==========================================================
    HIDE STREAMLIT COMMUNITY CLOUD BOTTOM-RIGHT PROFILE
 ========================================================== */
 
-/* Target utama tombol profile */
 [data-testid="stDecoration"],
 button[data-testid="baseButton-stDecoration"],
 button[aria-label="View profile"],
 div[data-testid="stDecoration"],
 span[data-testid="stDecoration"],
 a[data-testid="stDecoration"],
-button[data-testid="stDecoration"] {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
+button[data-testid="stDecoration"]{
+
+    display:none !important;
+
+    visibility:hidden !important;
+
+    opacity:0 !important;
+
+    pointer-events:none !important;
 }
 
-/* Fallback: container bottom-right */
+
 div.css-1cpxqw2,
 div.css-1v0mbdj,
-div[data-testid="stBottomRightContainer"] {
-    display: none !important;
+div[data-testid="stBottomRightContainer"]{
+
+    display:none !important;
 }
 
-/* Fallback tambahan untuk decoration di body */
-body > div[data-testid="stDecoration"] {
-    display: none !important;
+
+body > div[data-testid="stDecoration"]{
+
+    display:none !important;
 }
 
-/* Target seluruh elemen fixed di area kanan bawah */
+
 div[data-testid="stDecoration"] button,
 div[data-testid="stDecoration"] a,
-div[data-testid="stDecoration"] span {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
+div[data-testid="stDecoration"] span{
+
+    display:none !important;
+
+    visibility:hidden !important;
+
+    opacity:0 !important;
+
+    pointer-events:none !important;
+}
+
+
+/* ==========================================================
+   SMALL SCREEN
+========================================================== */
+
+@media(max-width:900px){
+
+    .homepage-hero{
+
+        padding:50px 30px 35px;
+
+        min-height:620px;
+    }
+
+    .hero-title{
+
+        font-size:31px;
+    }
+
+    .hero-logo{
+
+        width:95px;
+        height:95px;
+
+        border-radius:24px;
+    }
+
+    .hero-logo-image{
+
+        width:95px;
+        height:95px;
+    }
+
+    .hero-authors{
+
+        font-size:13px;
+
+        flex-wrap:wrap;
+    }
+
+    .sidebar-brand-title{
+
+        font-size:14px;
+    }
+
+    .hero-content::before,
+    .hero-content::after{
+
+        display:none;
+    }
 }
 
 </style>
@@ -685,59 +1360,93 @@ def render_sidebar():
     """Render sidebar KomoditasAI."""
 
     with st.sidebar:
-
         # ======================================================
-        # BRAND
+        # LOGO
         # ======================================================
+        logo_path = Path("logo.png")
 
-        st.html("""
+        logo_base64 = base64.b64encode(
+            logo_path.read_bytes()
+        ).decode()
+
+        st.html(f"""
         <div style="
             display:flex;
             align-items:center;
-            gap:10px;
+            gap:11px;
             margin-bottom:28px;
+            padding:2px 2px 4px 2px;
         ">
 
+            <!-- LOGO -->
             <div style="
-                width:48px;
-                height:48px;
+                width:50px;
+                height:50px;
                 flex-shrink:0;
-                border-radius:13px;
-                background:linear-gradient(
-                    135deg,
-                    #FF4B4B,
-                    #FFB199
-                );
+
                 display:flex;
                 justify-content:center;
                 align-items:center;
-                color:white;
-                font-weight:800;
-                font-size:20px;
-                box-shadow:
-                    0 7px 16px rgba(255,75,75,.16);
+
+                background:transparent;
+
+                border-radius:12px;
             ">
-                Rp
+
+                <img
+                    src="data:image/png;base64,{logo_base64}"
+                    style="
+                        width:60px;
+                        height:60px;
+
+                        object-fit:contain;
+                        display:block;
+
+                        background:transparent;
+
+                        filter:
+                            drop-shadow(
+                                0 4px 7px
+                                rgba(86,104,52,.12)
+                            );
+                    "
+                >
+
             </div>
 
+
+            <!-- BRAND TEXT -->
             <div style="
                 line-height:1.25;
+                min-width:0;
             ">
 
+                <!-- TITLE -->
                 <div style="
                     font-size:15px;
                     font-weight:750;
-                    color:#31333F;
+                    color:#46562A;
+
+                    letter-spacing:-0.15px;
+
+                    white-space:nowrap;
                 ">
-                    KomoditasAI
+                    PanganShield
                 </div>
 
+
+                <!-- SUBTITLE -->
                 <div style="
                     font-size:11px;
-                    color:#737687;
+                    color:#737C68;
+
                     margin-top:3px;
+
+                    line-height:1.4;
+
+                    white-space:wrap;
                 ">
-                    Stacking Ensemble Dashboard
+                    Prediksi Risiko Harga Pangan Akurat
                 </div>
 
             </div>
