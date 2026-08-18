@@ -356,8 +356,10 @@ with st.container(border=True):
     col1, col2, col3 = st.columns([1, 8, 1])
 
     with col2:
+
         fig, ax = plt.subplots(
-            figsize=(16, 6)
+            figsize=(10, 5),
+            dpi=120,
         )
 
         ax.plot(
@@ -410,10 +412,7 @@ with st.container(border=True):
 
         fig.tight_layout()
 
-        st.pyplot(
-            fig,
-            use_container_width=True,
-        )
+        st.pyplot(fig)
 
         plt.close(fig)
 
@@ -941,98 +940,11 @@ with st.expander(
 
 
 # ============================================================
-# 8. MODEL COMPARISON
+# 8. VALUE AT RISK
 # ============================================================
 
 st.markdown(
-    "### 8. 🏆 Perbandingan Performa Model"
-)
-
-
-metric_table_final = pd.concat(
-    [
-        metric_table,
-        pd.DataFrame(
-            [
-                stacking_metric
-            ]
-        ),
-    ],
-    ignore_index=True,
-)
-
-
-with st.container(border=True):
-
-    col1, col2, col3 = st.columns([1, 8, 1])
-
-    with col2:
-
-        fig, ax = plt.subplots(
-            figsize=(10, 5),
-            dpi=120,
-        )
-
-        ax.plot(
-            test_series.index,
-            test_series,
-            linewidth=2.8,
-            label="Actual",
-        )
-
-        ax.plot(
-            sarima_test_pred.index,
-            sarima_test_pred,
-            linewidth=1.8,
-            label="SARIMA",
-        )
-
-        ax.plot(
-            svr_test_pred.index,
-            svr_test_pred,
-            linewidth=1.8,
-            label="SVR",
-        )
-
-        ax.plot(
-            rf_test_pred.index,
-            rf_test_pred,
-            linewidth=1.8,
-            label="Random Forest",
-        )
-
-        ax.set_xlabel(
-            "Tanggal"
-        )
-
-        ax.set_ylabel(
-            f"Harga {commodity_name}"
-        )
-
-        ax.set_title(
-            "Perbandingan Aktual dan Prediksi Base Learners"
-        )
-
-        ax.grid(
-            alpha=0.25
-        )
-
-        ax.legend(
-            frameon=False
-        )
-
-        fig.tight_layout()
-
-        st.pyplot(fig)
-
-        plt.close(fig)
-
-# ============================================================
-# 9. VALUE AT RISK
-# ============================================================
-
-st.markdown(
-    "### 9. ⚠️ Analisis Risiko"
+    "### 8. ⚠️ Analisis Risiko"
 )
 
 meta_oof_pred = pd.Series(
