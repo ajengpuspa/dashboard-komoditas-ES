@@ -1238,58 +1238,10 @@ div[role="radiogroup"] label{
 
 
 /* ==========================================================
-   HIDE STREAMLIT COMMUNITY CLOUD BOTTOM-RIGHT PROFILE
+   HIDE STREAMLIT CLOUD APP CREATOR PROFILE
 ========================================================== */
 
-[data-testid="stDecoration"],
-button[data-testid="baseButton-stDecoration"],
-button[aria-label="View profile"],
-div[data-testid="stDecoration"],
-span[data-testid="stDecoration"],
-a[data-testid="stDecoration"],
-button[data-testid="stDecoration"]{
-
-    display:none !important;
-
-    visibility:hidden !important;
-
-    opacity:0 !important;
-
-    pointer-events:none !important;
-}
-
-
-div.css-1cpxqw2,
-div.css-1v0mbdj,
-div[data-testid="stBottomRightContainer"]{
-
-    display:none !important;
-}
-
-
-body > div[data-testid="stDecoration"]{
-
-    display:none !important;
-}
-
-
-div[data-testid="stDecoration"] button,
-div[data-testid="stDecoration"] a,
-div[data-testid="stDecoration"] span{
-
-    display:none !important;
-
-    visibility:hidden !important;
-
-    opacity:0 !important;
-
-    pointer-events:none !important;
-}
-
-/* ==========================================================
-   HIDE STREAMLIT CLOUD APP CREATOR AVATAR
-========================================================== */
-
+/* Creator avatar */
 [data-testid="creatorAvatar"]{
     display:none !important;
     visibility:hidden !important;
@@ -1298,33 +1250,30 @@ div[data-testid="stDecoration"] span{
 }
 
 
-/* Hide parent container */
-div[class*="profileContainer"]{
-    display:none !important;
-    visibility:hidden !important;
-    opacity:0 !important;
-    pointer-events:none !important;
-}
-
-
-/* Additional fallback */
-div[class*="profilePreview"]{
-    display:none !important;
-    visibility:hidden !important;
-    opacity:0 !important;
-    pointer-events:none !important;
-}
-
+/* Creator profile container */
 [class*="profileContainer"]{
     display:none !important;
+    visibility:hidden !important;
+    opacity:0 !important;
+    pointer-events:none !important;
 }
 
+
+/* Creator profile preview */
 [class*="profilePreview"]{
     display:none !important;
+    visibility:hidden !important;
+    opacity:0 !important;
+    pointer-events:none !important;
 }
 
+
+/* Creator profile image */
 [class*="profileImage"]{
     display:none !important;
+    visibility:hidden !important;
+    opacity:0 !important;
+    pointer-events:none !important;
 }
 
 /* ==========================================================
