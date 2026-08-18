@@ -1286,6 +1286,34 @@ div[data-testid="stDecoration"] span{
     pointer-events:none !important;
 }
 
+/* ==========================================================
+   HIDE STREAMLIT CLOUD APP CREATOR AVATAR
+========================================================== */
+
+[data-testid="creatorAvatar"]{
+    display:none !important;
+    visibility:hidden !important;
+    opacity:0 !important;
+    pointer-events:none !important;
+}
+
+
+/* Hide parent container */
+div[class*="profileContainer"]{
+    display:none !important;
+    visibility:hidden !important;
+    opacity:0 !important;
+    pointer-events:none !important;
+}
+
+
+/* Additional fallback */
+div[class*="profilePreview"]{
+    display:none !important;
+    visibility:hidden !important;
+    opacity:0 !important;
+    pointer-events:none !important;
+}
 
 /* ==========================================================
    SMALL SCREEN
