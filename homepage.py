@@ -1,4 +1,6 @@
 import streamlit as st
+import base64
+import os
 
 from utils import (
     init_session_state,
@@ -6,13 +8,14 @@ from utils import (
     render_sidebar,
 )
 
+
 # ============================================================
 # PAGE CONFIG
 # ============================================================
 
 st.set_page_config(
-    page_title="KomoditasAI Dashboard",
-    page_icon="💰",
+    page_title="PanganShield Dashboard",
+    page_icon="🌾",
     layout="wide",
 )
 
@@ -23,6 +26,25 @@ st.set_page_config(
 init_session_state()
 inject_custom_css()
 render_sidebar()
+
+# ============================================================
+# LOGO
+# ============================================================
+
+logo_path = os.path.join(
+    os.path.dirname(__file__),
+    "logo.png",
+)
+
+with open(
+    logo_path,
+    "rb",
+) as image_file:
+
+    logo_base64 = base64.b64encode(
+        image_file.read()
+    ).decode()
+
 
 # ============================================================
 # BREADCRUMB
@@ -37,27 +59,25 @@ st.markdown(
 # HERO
 # ============================================================
 
-st.html("""
+st.html(f"""
 <div class="homepage-hero">
-
-    <div class="homepage-dots"></div>
-    <div class="homepage-circle"></div>
 
     <div class="hero-content">
 
         <div class="hero-logo">
-            Rp
+            <img
+                src="data:image/png;base64,{logo_base64}"
+                class="hero-logo-image"
+            >
         </div>
 
         <div class="hero-kicker">
-            KomoditasAI • Stacking Ensemble Dashboard
+            PanganShield • Prediksi Risiko Harga Pangan Akurat
         </div>
 
         <div class="hero-title">
-            Integrasi Model Kecerdasan Buatan dan Stokastik
-            Melalui Stacking Ensemble Learning untuk
-            Prediksi Harga dan Risiko Komoditas Pangan
-            di Indonesia
+            Ensemble Learning Model untuk Prediksi 
+            Harga dan Risiko Komoditas Pangan Nasional
         </div>
 
         <div class="hero-accent"></div>
@@ -70,7 +90,9 @@ st.html("""
 
             <div>
                 Disusun oleh:
-                <b>Mohammad Idhom, Trimono, Ajeng Puspa, Shafira Amanda</b>
+                <b>
+                    Mohammad Idhom, Trimono, Ajeng Puspa, Shafira Amanda
+                </b>
             </div>
 
         </div>
