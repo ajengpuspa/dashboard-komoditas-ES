@@ -35,6 +35,9 @@ def init_session_state():
 
 _CUSTOM_CSS = """
 <style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+.stDeployButton {display: none;}
 
 /* ==========================================================
    KOMODITASAI COLOR PALETTE
