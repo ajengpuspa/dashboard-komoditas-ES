@@ -1315,6 +1315,18 @@ div[class*="profilePreview"]{
     pointer-events:none !important;
 }
 
+[class*="profileContainer"]{
+    display:none !important;
+}
+
+[class*="profilePreview"]{
+    display:none !important;
+}
+
+[class*="profileImage"]{
+    display:none !important;
+}
+
 /* ==========================================================
    SMALL SCREEN
 ========================================================== */
